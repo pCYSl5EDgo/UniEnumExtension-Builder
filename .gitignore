@@ -1,0 +1,8 @@
+﻿[Ll]ibrary/*
+[Ll]ogs/*
+[Oo]bj/*
+[Tt]emp/*
+[Bb]uild/*
+[Bb]uilds/*
+*.sln
+*.csproj
