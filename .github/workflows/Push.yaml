@@ -30,6 +30,13 @@ jobs:
           /opt/Unity/Editor/Unity -logFile -manualLicenseFile Unity_v2018.x.ulf -batchmode -nographics -quit || exit 0
         env:
           CYPHER_KEY: ${{ secrets.cypherkey }}
+          
+      - run: |
+          /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
+          /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.UpdatePackageVersion
+          /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.PrintVersion
+          
+      - run: cat version.txt
 
       - name: Build unitypackage
         run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateBOOTH
@@ -47,6 +54,48 @@ jobs:
           path: artifact_booth
           name: unitypackage_booth
           
+      - name: Create Release GPLv3
+        id: create_release_gplv3
+        uses: actions/create-release@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }} - GPLv3
+          draft: false
+          prerelease: false
+          
+      - name: Create Release BOOTH
+          id: create_release_booth
+          uses: actions/create-release@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: ${{ github.ref }}
+            release_name: Release ${{ github.ref }} - BOOTH
+            draft: false
+            prerelease: false
+
+      - name: Upload Release Asset GPLv3
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release_gplv3.outputs.upload_url }}
+          asset_path: artifact_gplv3/UniEnumExtension.unitypackage
+          asset_name: UniEnumExtension.unitypackage
+          asset_content_type: application/gzip
+          
+      - name: Upload Release Asset BOOTH
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release_booth.outputs.upload_url }}
+          asset_path: artifact_booth/UniEnumExtension.unitypackage
+          asset_name: UniEnumExtension.unitypackage
+          asset_content_type: application/gzip
+          
       - name: install
         run: |
           git clone https://github.com/pCYSl5EDgo/UniEnumExtension
@@ -59,4 +108,6 @@ jobs:
           cp -fr ../UniEnumExtension-Builder/Assets/Plugins/UEE/ ./
           git add .
           git commit -m $GITHUB_SHA
+          git checkout master
+          git merge 2018-4
           git push
