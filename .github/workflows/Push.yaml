@@ -66,15 +66,15 @@ jobs:
           prerelease: false
           
       - name: Create Release BOOTH
-          id: create_release_booth
-          uses: actions/create-release@master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            tag_name: ${{ github.ref }}
-            release_name: Release ${{ github.ref }} - BOOTH
-            draft: false
-            prerelease: false
+        id: create_release_booth
+        uses: actions/create-release@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }} - BOOTH
+          draft: false
+          prerelease: false
 
       - name: Upload Release Asset GPLv3
         uses: actions/upload-release-asset@v1.0.1
