@@ -11,7 +11,7 @@ jobs:
     container: docker://gableroux/unity3d:${{ matrix.unity-tag }}
     strategy:
       matrix:
-        unity-tag: [2018.4.10f1]
+        unity-tag: [2018.4.9f1]
     steps:
       - name: Create Directory & Git Clone & Checkout & Remove Test Folder & Copy Files
         run: |
