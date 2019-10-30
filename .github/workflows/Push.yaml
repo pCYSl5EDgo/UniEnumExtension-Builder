@@ -99,15 +99,12 @@ jobs:
       - name: install
         run: |
           git clone https://github.com/pCYSl5EDgo/UniEnumExtension
-          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-GPLv3
-          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-GPLv3.meta
+          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial
+          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial.meta
           cd UniEnumExtension
           git config --local user.name "pCYSl5EDgo"
           git config --local user.email "pCYSl5EDgo@yahoo.co.jp"
-          git checkout 2018-4
-          cp -fr ../UniEnumExtension-Builder/Assets/Plugins/UEE/ ../UniEnumExtension
+          cp -fRT ../UniEnumExtension-Builder/Assets/Plugins/UEE/ ./
           git add .
           git commit -m $GITHUB_SHA
-          git checkout master
-          git merge 2018-4
           git push
