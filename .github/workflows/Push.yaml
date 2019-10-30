@@ -13,6 +13,10 @@ jobs:
       matrix:
         unity-tag: [2018.4.9f1]
     steps:
+      - run: echo $netrc > ~/.netrc
+        env:
+          netrc: ${{ secrets.netrc }}
+
       - name: Create Directory & Git Clone & Checkout & Remove Test Folder & Copy Files
         run: |
           mkdir artifact_gplv3
