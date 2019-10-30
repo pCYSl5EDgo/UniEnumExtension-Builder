@@ -42,3 +42,17 @@ jobs:
         with:
           path: artifact_booth
           name: unitypackage_booth
+          
+      - name: install
+        run: |
+          git clone https://github.com/pCYSl5EDgo/UniEnumExtension
+          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-GPLv3
+          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-GPLv3.meta
+          cd UniEnumExtension
+          git config --local user.name "pCYSl5EDgo"
+          git config --local user.email "pCYSl5EDgo@yahoo.co.jp"
+          git checkout 2018-4
+          cp -fr ../UniEnumExtension-Builder/Assets/Plugins/UEE/ ./
+          git add .
+          git commit -m $GITHUB_SHA
+          git push
