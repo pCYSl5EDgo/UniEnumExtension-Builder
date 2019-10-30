@@ -105,7 +105,7 @@ jobs:
           git config --local user.name "pCYSl5EDgo"
           git config --local user.email "pCYSl5EDgo@yahoo.co.jp"
           git checkout 2018-4
-          cp -fr ../UniEnumExtension-Builder/Assets/Plugins/UEE/ ./
+          cp -fr ../UniEnumExtension-Builder/Assets/Plugins/UEE/ ../UniEnumExtension
           git add .
           git commit -m $GITHUB_SHA
           git checkout master
