@@ -102,6 +102,7 @@ jobs:
           rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial
           rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial.meta
           cd UniEnumExtension
+          ls | grep -v -E '.github' | xargs rm -r
           git config --local user.name "pCYSl5EDgo"
           git config --local user.email "pCYSl5EDgo@yahoo.co.jp"
           cp -fRT ../UniEnumExtension-Builder/Assets/Plugins/UEE/ ./
