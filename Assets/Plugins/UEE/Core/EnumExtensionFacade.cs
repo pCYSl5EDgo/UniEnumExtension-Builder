@@ -52,6 +52,7 @@ namespace UniEnumExtension
                     new EnumIsDefinedMethodProcessor(),
                     new EnumGetValuesMethodProcessor(),
                     new EnumHasFlagMethodProcessor(),
+                    new EnumGetUnderlyingTypeProcessor(),
                 },
                 searchDirectory)
         {
