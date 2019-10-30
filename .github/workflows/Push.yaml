@@ -60,7 +60,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }}-${{ github.sha }}-gplv3
           release_name: Release ${{ github.ref }} - GPLv3
           draft: false
           prerelease: false
@@ -71,7 +71,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }}-${{ github.sha }}-booth
           release_name: Release ${{ github.ref }} - BOOTH
           draft: false
           prerelease: false
