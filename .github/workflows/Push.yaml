@@ -1,0 +1,44 @@
+﻿name: TestRunner
+
+on:
+  push:
+    branches:
+      - 2018-4
+
+jobs:
+  createDllJob:
+    runs-on: ubuntu-latest
+    container: docker://gableroux/unity3d:${{ matrix.unity-tag }}
+    strategy:
+      matrix:
+        unity-tag: [2018.4.10f1]
+    steps:
+      - name: Create Directory & Git Clone & Checkout & Remove Test Folder & Copy Files
+        run: |
+          mkdir artifact_gplv3
+          mkdir artifact_booth
+          git clone https://github.com/pCYSl5EDgo/UniEnumExtension-Builder
+          cd UniEnumExtension-Builder
+          git config --local user.name "pCYSl5EDgo"
+          git config --local user.email "pCYSl5EDgo@yahoo.co.jp"
+          git checkout $GITHUB_SHA
+          openssl aes-256-cbc -d -in Unity_v2018.x.ulf-cipher -k ${CYPHER_KEY} >> Unity_v2018.x.ulf
+          /opt/Unity/Editor/Unity -logFile -manualLicenseFile Unity_v2018.x.ulf -batchmode -nographics -quit || exit 0
+        env:
+          CYPHER_KEY: ${{ secrets.cypherkey }}
+
+      - name: Build unitypackage
+        run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateBOOTH
+
+      - name: Build unitypackage
+        run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateGplV3
+
+      - uses: actions/upload-artifact@master
+        with:
+          path: artifact_gplv3
+          name: unitypackage_gplv3
+
+      - uses: actions/upload-artifact@master
+        with:
+          path: artifact_booth
+          name: unitypackage_booth
