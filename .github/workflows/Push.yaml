@@ -13,96 +13,111 @@ jobs:
       matrix:
         unity-tag: [2018.4.9f1]
     steps:
-      - run: echo $netrc > ~/.netrc
-        env:
-          netrc: ${{ secrets.netrc }}
+    - run: echo $netrc > ~/.netrc
+      env:
+        netrc: ${{ secrets.netrc }}
 
-      - name: Create Directory & Git Clone & Checkout & Remove Test Folder & Copy Files
-        run: |
-          mkdir artifact_gplv3
-          mkdir artifact_booth
-          git clone https://github.com/pCYSl5EDgo/UniEnumExtension-Builder
-          cd UniEnumExtension-Builder
-          git config --local user.name "pCYSl5EDgo"
-          git config --local user.email "pCYSl5EDgo@yahoo.co.jp"
-          git checkout $GITHUB_SHA
-          openssl aes-256-cbc -d -in Unity_v2018.x.ulf-cipher -k ${CYPHER_KEY} >> Unity_v2018.x.ulf
-          /opt/Unity/Editor/Unity -logFile -manualLicenseFile Unity_v2018.x.ulf -batchmode -nographics -quit || exit 0
-        env:
-          CYPHER_KEY: ${{ secrets.cypherkey }}
-          
-      - run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
+    - name: Create Directory & Git Clone & Checkout & Remove Test Folder & Copy Files
+      run: |
+        mkdir artifact_gplv3
+        mkdir artifact_booth
+        git clone https://github.com/pCYSl5EDgo/UniEnumExtension-Builder
+        cd UniEnumExtension-Builder
+        git config --local user.name "pCYSl5EDgo"
+        git config --local user.email "pCYSl5EDgo@yahoo.co.jp"
+        git checkout $GITHUB_SHA
+        openssl aes-256-cbc -d -in Unity_v2018.x.ulf-cipher -k ${CYPHER_KEY} >> Unity_v2018.x.ulf
+        /opt/Unity/Editor/Unity -logFile -manualLicenseFile Unity_v2018.x.ulf -batchmode -nographics -quit || exit 0
+      env:
+        CYPHER_KEY: ${{ secrets.cypherkey }}
 
-      - name: Build unitypackage
-        run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateBOOTH
+    - run: mkdir cache_folder
+    - id: restore-cache
+      uses: actions/cache@preview
+      with:
+        path: cache_folder
+        key: ${{ matrix.unity-tag }}
 
-      - name: Build unitypackage
-        run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateGplV3
+    - if: steps.restore-cache.outputs.cache-hit == 'true'
+      run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
 
-      - uses: actions/upload-artifact@master
-        with:
-          path: artifact_gplv3
-          name: unitypackage_gplv3
+    - uses: actions/cache@preview
+      with:
+        path: UniEnumExtension-Builder/Library
+        key: ${{ matrix.unity-tag }}-Library
 
-      - uses: actions/upload-artifact@master
-        with:
-          path: artifact_booth
-          name: unitypackage_booth
-          
-      - name: Create Release GPLv3
-        id: create_release_gplv3
-        uses: actions/create-release@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}-${{ github.sha }}-gplv3
-          release_name: Release ${{ github.ref }} - GPLv3
-          draft: false
-          prerelease: false
-          
-      - name: Create Release BOOTH
-        id: create_release_booth
-        uses: actions/create-release@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}-${{ github.sha }}-booth
-          release_name: Release ${{ github.ref }} - BOOTH
-          draft: false
-          prerelease: false
+    - run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
 
-      - name: Upload Release Asset GPLv3
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release_gplv3.outputs.upload_url }}
-          asset_path: artifact_gplv3/UniEnumExtension.unitypackage
-          asset_name: UniEnumExtension.unitypackage
-          asset_content_type: application/gzip
-          
-      - name: Upload Release Asset BOOTH
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release_booth.outputs.upload_url }}
-          asset_path: artifact_booth/UniEnumExtension.unitypackage
-          asset_name: UniEnumExtension.unitypackage
-          asset_content_type: application/gzip
-          
-      - name: install
-        run: |
-          git clone https://github.com/pCYSl5EDgo/UniEnumExtension
-          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial
-          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial.meta
-          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/Dll/ProgramStatus.asset
-          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/Dll/ProgramStatus.asset.meta
-          cd UniEnumExtension
-          ls | grep -v -E '.github' | xargs rm -r
-          git config --local user.name "pCYSl5EDgo"
-          git config --local user.email "pCYSl5EDgo@yahoo.co.jp"
-          cp -fRT ../UniEnumExtension-Builder/Assets/Plugins/UEE/ ./
-          git add .
-          git commit -m $GITHUB_SHA
-          git push
+    - name: Build unitypackage
+      run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateBOOTH
+
+    - name: Build unitypackage
+      run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateGplV3
+
+    - uses: actions/upload-artifact@master
+      with:
+        path: artifact_gplv3
+        name: unitypackage_gplv3
+
+    - uses: actions/upload-artifact@master
+      with:
+        path: artifact_booth
+        name: unitypackage_booth
+        
+    - name: Create Release GPLv3
+      id: create_release_gplv3
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}-${{ github.sha }}-gplv3
+        release_name: Release ${{ github.ref }} - GPLv3
+        draft: false
+        prerelease: false
+        
+    - name: Create Release BOOTH
+      id: create_release_booth
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}-${{ github.sha }}-booth
+        release_name: Release ${{ github.ref }} - BOOTH
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset GPLv3
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release_gplv3.outputs.upload_url }}
+        asset_path: artifact_gplv3/UniEnumExtension.unitypackage
+        asset_name: UniEnumExtension.unitypackage
+        asset_content_type: application/gzip
+        
+    - name: Upload Release Asset BOOTH
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release_booth.outputs.upload_url }}
+        asset_path: artifact_booth/UniEnumExtension.unitypackage
+        asset_name: UniEnumExtension.unitypackage
+        asset_content_type: application/gzip
+        
+    - name: install
+      run: |
+        git clone https://github.com/pCYSl5EDgo/UniEnumExtension
+        rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial
+        rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial.meta
+        rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/Dll/ProgramStatus.asset
+        rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/Dll/ProgramStatus.asset.meta
+        cd UniEnumExtension
+        ls | grep -v -E '.github' | xargs rm -r
+        git config --local user.name "pCYSl5EDgo"
+        git config --local user.email "pCYSl5EDgo@yahoo.co.jp"
+        cp -fRT ../UniEnumExtension-Builder/Assets/Plugins/UEE/ ./
+        git add .
+        git commit -m $GITHUB_SHA
+        git push
