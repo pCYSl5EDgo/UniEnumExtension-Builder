@@ -5,54 +5,28 @@ using System.Linq;
 using System.Text;
 using Editor;
 using UnityEditor;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using PackageInfo = UnityEditor.PackageInfo;
 
 public static class CreateUnityPackage
 {
-    public static void PrintVersion()
-    {
-        File.WriteAllText(Application.dataPath + "/../../version.txt", PlayerSettings.bundleVersion);
-    }
-    
-    public static void UpdatePackageVersion()
+    public static void IncrementBuildVersion()
     {
         var path = Application.dataPath + "/Plugins/UEE/package.json";
         var packageJson = JsonUtility.FromJson<PackageJson>(File.ReadAllText(path));
-        packageJson.version = PlayerSettings.bundleVersion;
-        File.WriteAllText(path, packageJson.ToString());
-    }
-
-    public static void IncrementBuildVersion()
-    {
-        var bundleVersion = PlayerSettings.bundleVersion.Split('.');
+        var bundleVersion = packageJson.version.Split('.');
         ref var buildVersion = ref bundleVersion[bundleVersion.Length - 1];
         if (!int.TryParse(buildVersion, out var buildNumber))
         {
             Console.Error.WriteLine(buildVersion + " is not valid build number : " + bundleVersion);
         }
         buildVersion = (buildNumber + 1).ToString();
-        bundleVersion.ToBundleVersion();
+        packageJson.ToBundleVersion(bundleVersion);
+        File.WriteAllText(path, packageJson.ToString());
     }
 
-    private static void ToBundleVersion(this IReadOnlyList<string> bundleVersion)
+    private static void ToBundleVersion(this ref PackageJson packageJson, IReadOnlyList<string> bundleVersion)
     {
-        PlayerSettings.bundleVersion = bundleVersion.Skip(1).Aggregate(new StringBuilder(bundleVersion[0]), (builder, str) => builder.Append('.').Append(str), builder => builder.ToString());
-    }
-
-    public static void IncrementMinorVersionAndResetBuildVersion()
-    {
-        var bundleVersion = PlayerSettings.bundleVersion.Split('.');
-        ref var buildVersion = ref bundleVersion[bundleVersion.Length - 1];
-        ref var minorVersion = ref bundleVersion[bundleVersion.Length - 2];
-        if (!int.TryParse(minorVersion, out var minorNumber))
-        {
-            Console.Error.WriteLine(minorNumber + " is not valid " + nameof(minorNumber) + " : " + bundleVersion);
-        }
-        buildVersion = "0";
-        minorVersion = (minorNumber + 1).ToString();
-        bundleVersion.ToBundleVersion();
+        packageJson.version = bundleVersion.Skip(1).Aggregate(new StringBuilder(bundleVersion[0]), (builder, str) => builder.Append('.').Append(str), builder => builder.ToString());
     }
 
     public static void CreateBOOTH()

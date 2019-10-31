@@ -31,12 +31,7 @@ jobs:
         env:
           CYPHER_KEY: ${{ secrets.cypherkey }}
           
-      - run: |
-          /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
-          /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.UpdatePackageVersion
-          /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.PrintVersion
-          
-      - run: cat version.txt
+      - run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
 
       - name: Build unitypackage
         run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateBOOTH
@@ -101,6 +96,8 @@ jobs:
           git clone https://github.com/pCYSl5EDgo/UniEnumExtension
           rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial
           rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/LICENSE-Commercial.meta
+          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/Dll/ProgramStatus.asset
+          rm -f UniEnumExtension-Builder/Assets/Plugins/UEE/Dll/ProgramStatus.asset.meta
           cd UniEnumExtension
           ls | grep -v -E '.github' | xargs rm -r
           git config --local user.name "pCYSl5EDgo"

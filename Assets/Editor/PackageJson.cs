@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Editor
 {
     [Serializable]
-    public sealed class PackageJson
+    public struct PackageJson
     {
         public string name;
         public string displayName;
