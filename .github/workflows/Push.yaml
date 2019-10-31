@@ -1,6 +1,5 @@
 ﻿name: TestRunner
 
-
 on:
   push:
     branches:
