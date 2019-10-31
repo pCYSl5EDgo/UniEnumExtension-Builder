@@ -33,18 +33,13 @@ jobs:
 
     - run: mkdir cache_folder
     - id: restore-cache
-      uses: actions/cache@preview
+      uses: pCYSl5EDgo/cache-restore@preview
       with:
         path: cache_folder
         key: ${{ matrix.unity-tag }}
 
     - if: steps.restore-cache.outputs.cache-hit == 'true'
       run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
-
-    - uses: actions/cache@preview
-      with:
-        path: UniEnumExtension-Builder/Library
-        key: ${{ matrix.unity-tag }}-Library
 
     - run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
 
@@ -53,6 +48,12 @@ jobs:
 
     - name: Build unitypackage
       run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateGplV3
+
+    - id: save-cache
+      uses: pCYSl5EDgo/cache-save@preview
+      with:
+        path: cache_folder
+        key: ${{ matrix.unity-tag }}
 
     - uses: actions/upload-artifact@master
       with:
