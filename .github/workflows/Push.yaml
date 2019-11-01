@@ -52,7 +52,7 @@ jobs:
     - name: Build unitypackage
       run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateGplV3
 
-    run: cp -f UniEnumExtension-Builder/Assets/Plugins/UEE/package.json cache_folder/
+    - run: cp -f UniEnumExtension-Builder/Assets/Plugins/UEE/package.json cache_folder/
 
     - id: save-cache
       uses: pCYSl5EDgo/cache-save@preview
