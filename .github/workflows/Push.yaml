@@ -13,16 +13,23 @@ jobs:
       matrix:
         unity-tag: [2018.4.9f1]
     steps:
-    - run: echo -n -e "HELLO \n!\n HELLO" > package.json
+    - run: |
+        mkdir z
+        echo -n -e "HELLO\n !\n HELLO" > z/package.json
 
     - uses: pCYSl5EDgo/cat@master
       id: x
       with:
-        path: package.json
+        path: z/package.json
 
     - run: echo $TEXT
       env:
         TEXT: ${{ steps.x.outputs.text }}
+
+    - uses: actions/upload-artifact@master
+      with:
+        path: z
+        name: z
 
     - run: exit 1
 
