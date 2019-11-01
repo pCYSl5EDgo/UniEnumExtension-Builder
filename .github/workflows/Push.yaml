@@ -38,6 +38,15 @@ jobs:
         path: cache_folder
         key: u2018
 
+    - uses: pCYSl5EDgo/cat@master
+      id: x
+      with:
+        path: cache_folder/package.json
+
+    - run: echo $TEXT
+      env:
+        TEXT: ${{ steps.x.outputs.text }}
+
     - run: ls -l
     - run: ls -l cache_folder
 
