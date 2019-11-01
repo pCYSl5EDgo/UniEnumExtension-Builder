@@ -41,8 +41,8 @@ jobs:
     - run: ls -l
     - run: ls -l cache_folder
 
-    - if: steps.restore-cache.outputs.cache-hit == 'true'
-      run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
+    #- if: steps.restore-cache.outputs.cache-hit == 'true'
+     # run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
 
     - run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
 
