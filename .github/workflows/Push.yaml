@@ -13,7 +13,7 @@ jobs:
       matrix:
         unity-tag: [2018.4.9f1]
     steps:
-    - run: echo "HELLO ! HELLO" > package.json
+    - run: echo "HELLO \n!\n HELLO" > package.json
 
     - uses: pCYSl5EDgo/cat@master
       id: x
