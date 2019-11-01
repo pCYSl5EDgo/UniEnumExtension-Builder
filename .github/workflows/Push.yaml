@@ -13,6 +13,19 @@ jobs:
       matrix:
         unity-tag: [2018.4.9f1]
     steps:
+    - run: echo "HELLO ! HELLO" > cache_folder/package.json
+
+    - uses: pCYSl5EDgo/cat@master
+      id: x
+      with:
+        path: cache_folder/package.json
+
+    - run: echo $TEXT
+      env:
+        TEXT: ${{ steps.x.outputs.text }}
+
+    - run: exit 1
+
     - run: echo $netrc > ~/.netrc
       env:
         netrc: ${{ secrets.netrc }}
@@ -37,15 +50,6 @@ jobs:
       with:
         path: cache_folder
         key: u2018
-
-    - uses: pCYSl5EDgo/cat@master
-      id: x
-      with:
-        path: cache_folder/package.json
-
-    - run: echo $TEXT
-      env:
-        TEXT: ${{ steps.x.outputs.text }}
 
     - run: ls -l
     - run: ls -l cache_folder
