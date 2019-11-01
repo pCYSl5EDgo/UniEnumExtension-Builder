@@ -36,13 +36,13 @@ jobs:
       uses: pCYSl5EDgo/cache-restore@preview
       with:
         path: cache_folder
-        key: ${{ matrix.unity-tag }}
+        key: u2018
 
     - run: ls -l
     - run: ls -l cache_folder
 
-    - if: steps.restore-cache.outputs.cache-hit == 'true'
-      run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
+    #- if: steps.restore-cache.outputs.cache-hit == 'true'
+     # run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
 
     - run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
 
@@ -58,7 +58,7 @@ jobs:
       uses: pCYSl5EDgo/cache-save@preview
       with:
         path: cache_folder
-        key: ${{ matrix.unity-tag }}
+        key: u2018
 
     - run: ls -l
     - run: ls -l cache_folder
