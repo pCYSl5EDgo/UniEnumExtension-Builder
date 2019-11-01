@@ -13,12 +13,12 @@ jobs:
       matrix:
         unity-tag: [2018.4.9f1]
     steps:
-    - run: echo "HELLO ! HELLO" > cache_folder/package.json
+    - run: echo "HELLO ! HELLO" > package.json
 
     - uses: pCYSl5EDgo/cat@master
       id: x
       with:
-        path: cache_folder/package.json
+        path: package.json
 
     - run: echo $TEXT
       env:
