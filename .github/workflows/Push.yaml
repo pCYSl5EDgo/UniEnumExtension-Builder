@@ -38,6 +38,9 @@ jobs:
         path: cache_folder
         key: ${{ matrix.unity-tag }}
 
+    - run: ls -l
+    - run: ls -l cache_folder
+
     - if: steps.restore-cache.outputs.cache-hit == 'true'
       run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
 
@@ -122,4 +125,3 @@ jobs:
         git add .
         git commit -m $GITHUB_SHA
         git push
-  
