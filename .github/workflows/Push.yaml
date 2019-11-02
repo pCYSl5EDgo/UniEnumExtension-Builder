@@ -8,31 +8,11 @@ on:
 jobs:
   createDllJob:
     runs-on: ubuntu-latest
-    #container: docker://gableroux/unity3d:${{ matrix.unity-tag }}
+    container: docker://gableroux/unity3d:${{ matrix.unity-tag }}
     strategy:
       matrix:
         unity-tag: [2018.4.9f1]
     steps:
-    - run: |
-        mkdir z
-        echo -n -e "HELLO\n !\n HELLO" > z/package.json
-
-    - uses: pCYSl5EDgo/cat@master
-      id: x
-      with:
-        path: z/package.json
-
-    - run: echo $TEXT
-      env:
-        TEXT: ${{ steps.x.outputs.text }}
-
-    - uses: actions/upload-artifact@master
-      with:
-        path: z
-        name: z
-
-    - run: exit 1
-
     - run: echo $netrc > ~/.netrc
       env:
         netrc: ${{ secrets.netrc }}
@@ -51,18 +31,21 @@ jobs:
       env:
         CYPHER_KEY: ${{ secrets.cypherkey }}
 
-    - run: mkdir cache_folder
-    - id: restore-cache
-      uses: pCYSl5EDgo/cache-restore@preview
-      with:
-        path: cache_folder
-        key: u2018
+    - run: |
+    #    git describe --tag > last_tag
+        mkdir cache_folder
+    #- id: last-tag
+     # uses: pCYSl5EDgo/cat@master
+      #with:
+       # path: last_tag
+    #- id: restore-cache
+     # uses: pCYSl5EDgo/cache-restore@preview
+      #with:
+       # path: cache_folder
+        #key: steps.last-tag.outputs.text
 
-    - run: ls -l
-    - run: ls -l cache_folder
-
-    - if: steps.restore-cache.outputs.cache-hit == 'true'
-      run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
+    #- if: steps.restore-cache.outputs.cache-hit == 'true'
+     # run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
 
     - run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
 
@@ -73,15 +56,6 @@ jobs:
       run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.CreateGplV3
 
     - run: cp -f UniEnumExtension-Builder/Assets/Plugins/UEE/package.json cache_folder/
-
-    - id: save-cache
-      uses: pCYSl5EDgo/cache-save@preview
-      with:
-        path: cache_folder
-        key: u2018
-
-    - run: ls -l
-    - run: ls -l cache_folder
 
     - uses: actions/upload-artifact@master
       with:
@@ -134,7 +108,23 @@ jobs:
         asset_path: artifact_booth/UniEnumExtension.unitypackage
         asset_name: UniEnumExtension.unitypackage
         asset_content_type: application/gzip
-        
+    
+    - run: git describe --tag > last_tag
+    
+    - id: last-tag-2
+      uses: pCYSl5EDgo/cat@master
+      with:
+        path: last_tag
+
+    - id: save-cache
+      uses: pCYSl5EDgo/cache-save@preview
+      with:
+        path: cache_folder
+        key: steps.last-tag-2.outputs.text
+
+    - run: ls -l
+    - run: ls -l cache_folder
+
     - name: install
       run: |
         git clone https://github.com/pCYSl5EDgo/UniEnumExtension
