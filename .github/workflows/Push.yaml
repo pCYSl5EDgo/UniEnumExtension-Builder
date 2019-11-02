@@ -32,20 +32,20 @@ jobs:
         CYPHER_KEY: ${{ secrets.cypherkey }}
 
     - run: |
-    #    git describe --tag > last_tag
+        git describe --tag > last_tag
         mkdir cache_folder
-    #- id: last-tag
-     # uses: pCYSl5EDgo/cat@master
-      #with:
-       # path: last_tag
-    #- id: restore-cache
-     # uses: pCYSl5EDgo/cache-restore@preview
-      #with:
-       # path: cache_folder
-        #key: steps.last-tag.outputs.text
+    - id: last-tag
+      uses: pCYSl5EDgo/cat@master
+      with:
+        path: last_tag
+    - id: restore-cache
+      uses: pCYSl5EDgo/cache-restore@preview
+      with:
+        path: cache_folder
+        key: steps.last-tag.outputs.text
 
-    #- if: steps.restore-cache.outputs.cache-hit == 'true'
-     # run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
+    - if: steps.restore-cache.outputs.cache-hit == 'true'
+      run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
 
     - run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath "UniEnumExtension-Builder" -executeMethod CreateUnityPackage.IncrementBuildVersion
 
