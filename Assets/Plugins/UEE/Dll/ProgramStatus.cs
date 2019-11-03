@@ -8,11 +8,11 @@ namespace UniEnumExtension
 {
     public class ProgramStatus : ScriptableObject
     {
-        public bool ShouldProcessAllAssemblies;
+        [SerializeField] public bool ShouldProcessAllAssemblies;
         [SerializeField] public bool[] Enables;
         [SerializeField] public string[] Names;
         [SerializeField] public string[] OutputPaths;
-        
+
         private static ProgramStatus instance;
 
         public static ProgramStatus Instance
@@ -67,7 +67,7 @@ namespace UniEnumExtension
                 OutputPaths = Array.Empty<string>();
             if (!EditorPrefs.HasKey(nameof(UniEnumExtension) + nameof(ProgramStatus) + "IsFirst"))
             {
-                EditorApplication.wantsToQuit += ToQuit; 
+                EditorApplication.wantsToQuit += ToQuit;
                 return;
             }
             var playerAssemblies = CompilationPipeline.GetAssemblies(AssembliesType.Player);

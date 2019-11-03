@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -32,7 +30,7 @@ namespace UniEnumExtension
                 tuple.ByteSize = fileInfo.Length;
                 assemblyPaths.Add(tuple.ManagedPluginPath);
             }
-            using (var extender = new EnumExtender(searchDirectory: new[] { Path.GetDirectoryName(UnityEditorInternal.InternalEditorUtility.GetEngineCoreModuleAssemblyPath()) }))
+            using (var extender = new EnumExtender(SearchDirectorySettings.Instance.GetEditorSearchingDirectories()))
             {
                 extender.Extend(assemblyPaths);
             }

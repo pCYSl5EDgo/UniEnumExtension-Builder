@@ -82,7 +82,7 @@ namespace UniEnumExtension
                 Tuples[length + i] = new Tuple
                 {
                     ManagedPluginPath = enumerable[i],
-                    ShouldAutoProcess = enumerable[i].StartsWith("Assets"),
+                    ShouldAutoProcess = false,
                     ByteSize = new FileInfo(enumerable[i]).Length,
                 };
             }

@@ -42,7 +42,7 @@ jobs:
       uses: pCYSl5EDgo/cache-restore@preview
       with:
         path: cache_folder
-        key: steps.last-tag.outputs.text
+        key: ${{steps.last-tag.outputs.text}}
 
     - if: steps.restore-cache.outputs.cache-hit == 'true'
       run: cp -f cache_folder/package.json UniEnumExtension-Builder/Assets/Plugins/UEE/
@@ -120,7 +120,7 @@ jobs:
       uses: pCYSl5EDgo/cache-save@preview
       with:
         path: cache_folder
-        key: steps.last-tag-2.outputs.text
+        key: ${{steps.last-tag-2.outputs.text}}
 
     - run: ls -l
     - run: ls -l cache_folder

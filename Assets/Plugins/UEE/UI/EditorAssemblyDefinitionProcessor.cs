@@ -1,15 +1,14 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEngine;
 // ReSharper disable UnusedMember.Local
 
 namespace UniEnumExtension
 {
-    public sealed class Program : EditorWindow
+    public sealed class EditorAssemblyDefinitionProcessor : EditorWindow
     {
-        [MenuItem("Tools/UniEnumExtension/Settings")]
-        public static void Open() => GetWindow<Program>();
+        [MenuItem("Tools/UniEnumExtension/Open Assembly Definition Settings")]
+        public static void Open() => GetWindow<EditorAssemblyDefinitionProcessor>();
 
         private SerializedObject serializedObject;
         private SerializedProperty enablesProperty;
@@ -35,7 +34,8 @@ namespace UniEnumExtension
                 return;
             }
             var assemblyPaths = programStatus.OutputPaths.Where((_, index) => programStatus.Enables[index]);
-            using (var extender = new EnumExtender(searchDirectory: new[] { Path.GetDirectoryName(UnityEditorInternal.InternalEditorUtility.GetEngineCoreModuleAssemblyPath()) }))
+            var searchDirectorySettings = SearchDirectorySettings.Instance;
+            using (var extender = new EnumExtender(searchDirectorySettings.GetEditorSearchingDirectories()))
             {
                 extender.Extend(assemblyPaths);
             }

@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -11,8 +13,9 @@ namespace UniEnumExtension
     {
         private static readonly MethodInfo BeginBuildStep;
         private static readonly MethodInfo EndBuildStep;
-        private readonly object[] uniEnumExtension = { nameof(uniEnumExtension) };
+        private readonly object[] uniEnumExtension = {nameof(uniEnumExtension)};
         private readonly object[] step = new object[1];
+
         static EnumExtensionPostBuildPlayerScriptDll()
         {
             BeginBuildStep = typeof(BuildReport).GetMethod(nameof(BeginBuildStep), BindingFlags.Instance | BindingFlags.NonPublic);
@@ -20,6 +23,7 @@ namespace UniEnumExtension
         }
 
         public int callbackOrder => -1;
+
         public void OnPostBuildPlayerScriptDLLs(BuildReport report)
         {
             step[0] = BeginBuildStep.Invoke(report, uniEnumExtension);
@@ -33,7 +37,7 @@ namespace UniEnumExtension
             }
         }
 
-        private void Implement(BuildReport report)
+        private static void Implement(BuildReport report)
         {
             var programStatus = ProgramStatus.Instance;
             var targetNames = programStatus.Enables.Zip(programStatus.OutputPaths, (enable, outputPath) => (enable, Path.GetFileName(outputPath))).ToArray();
@@ -48,8 +52,10 @@ namespace UniEnumExtension
                 return targetNames.All(pair => pair.Item2 != buildName) || targetNames.First(pair => pair.Item2 == buildName).Item1;
             }).Select(buildFile => buildFile.path);
             var directoryName = Path.GetDirectoryName(report.files[0].path);
-            Debug.Log(directoryName);
-            using (var extender = new EnumExtender(new[] { directoryName }))
+            var buildTarget = EditorUserBuildSettings.activeBuildTarget;
+            var setting = SearchDirectorySettings.Instance;
+            var platformSpecific = setting.PlatformSpecificSettings.FirstOrDefault(specific => specific.BuildTarget == buildTarget);
+            using (var extender = new EnumExtender(platformSpecific.BuildTarget != buildTarget ? new[] {directoryName} : platformSpecific.SearchingDirectory.Append(directoryName).Distinct().ToArray()))
             {
                 extender.Extend(assemblyPaths);
             }
