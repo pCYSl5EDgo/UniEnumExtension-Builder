@@ -33,8 +33,6 @@ namespace UniEnumExtension
             }
             using (ScopedProcessor processor = body.GetILProcessor())
             {
-                processor.Simplify();
-                processor.PreProcessOptimization();
                 var exceptionHandlerTrees = ExceptionHandlerTree.Create(body);
                 var totalDepth = exceptionHandlerTrees.Max(x => x.TotalDepth);
                 for (var i = 0; i < totalDepth; i++)

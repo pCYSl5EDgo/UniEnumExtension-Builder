@@ -53,7 +53,7 @@ namespace UniEnumExtension
 
         private bool ToQuit()
         {
-            EditorPrefs.DeleteKey(nameof(UniEnumExtension) + nameof(ProgramStatus) + "IsFirst");
+            EditorPrefs.SetBool(nameof(UniEnumExtension) + nameof(ProgramStatus) + "IsFirst", true);
             return true;
         }
 
@@ -65,8 +65,9 @@ namespace UniEnumExtension
                 Names = Array.Empty<string>();
             if (OutputPaths == null)
                 OutputPaths = Array.Empty<string>();
-            if (!EditorPrefs.HasKey(nameof(UniEnumExtension) + nameof(ProgramStatus) + "IsFirst"))
+            if (EditorPrefs.GetBool(nameof(UniEnumExtension) + nameof(ProgramStatus) + "IsFirst", true))
             {
+                EditorPrefs.SetBool(nameof(UniEnumExtension) + nameof(ProgramStatus) + "IsFirst", false);
                 EditorApplication.wantsToQuit += ToQuit;
                 return;
             }

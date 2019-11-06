@@ -7,10 +7,7 @@ namespace UniEnumExtension
     public class EnumToStringMethodProcessor : IMethodProcessor
     {
         public byte Stage => 65;
-        public bool ShouldProcess(TypeDefinition typeDefinition)
-        {
-            return !typeDefinition.IsEnum;
-        }
+        public bool ShouldProcess(TypeDefinition typeDefinition) => !typeDefinition.IsEnum;
 
         public void Process(ModuleDefinition systemModuleDefinition, MethodDefinition methodDefinition)
         {
@@ -25,7 +22,7 @@ namespace UniEnumExtension
             }
         }
 
-        private void TryProcessEachInstruction(Instruction constrainedInstruction, ScopedProcessor processor, ModuleDefinition moduleDefinition, ModuleDefinition systemModuleDefinition)
+        private static void TryProcessEachInstruction(Instruction constrainedInstruction, ScopedProcessor processor, ModuleDefinition moduleDefinition, ModuleDefinition systemModuleDefinition)
         {
             if (!(constrainedInstruction?.Operand is TypeReference enumTypeReference) || constrainedInstruction.OpCode.Code != Code.Constrained || !enumTypeReference.TryToDefinition(out var enumTypeDefinition) || enumTypeDefinition.HasMethods)
             {
